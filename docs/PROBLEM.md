@@ -1,4 +1,4 @@
-# Problem Statement: SOP-to-Agent Compiler (draft for approval)
+# Problem Statement: SOP-to-Agent Compiler
 
 ## Context
 

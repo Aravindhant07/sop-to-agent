@@ -1,4 +1,4 @@
-# Requirements: SOP-to-Agent Compiler (draft for approval)
+# Requirements: SOP-to-Agent Compiler
 
 ## Users
 
@@ -34,10 +34,10 @@
 - Scanned or handwritten documents (OCR)
 - Multi-language documents
 
-## Open questions for you
+## Confirmed decisions
 
-1. **First domain:** insurance claims (continuity with project 1), loan approval, or
-   customer-support refunds?
-2. **Interface:** command line plus a web page to review the spec and the discovery report
-   (recommended), or command line only?
-3. **Name:** keep `sop-to-agent`, or prefer something else?
+| Question | Decision |
+|---|---|
+| First domain | **Loan approval** |
+| Interface | **CLI + review web page** |
+| Default models | **Free local open models from Hugging Face** (transformers); Ollama and Claude optional |
