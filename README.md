@@ -16,6 +16,8 @@ in production, and tests come late or never.
 | **Test set** (`tests.jsonl`) | One case per rule, boundary cases at every threshold, and cases that illustrate each open issue |
 | **Shadow Eval config** (`shadow_eval_domain.yaml`) | Plugs straight into [shadow-eval](https://github.com/Aravindhant07/shadow-eval) to prove the agent is ready to go live |
 
+![Discovery report](docs/images/report.png)
+
 It runs **free on open-source models** downloaded from Hugging Face and run locally, with an instant
 pattern-matching mode that needs no model at all.
 
@@ -94,6 +96,10 @@ conversational SOP (D)**. That gap is what the LLM extractor is for. Results for
 Per-variant details: [`docs/results/`](docs/results/).
 
 ## Review UI
+
+| Issues and rules | One rule against its source |
+|---|---|
+| ![Review](docs/images/review.png) | ![Rule](docs/images/rule.png) |
 
 `sop2agent serve` shows every rule next to its highlighted source sentence. You can accept, reject or
 edit a rule; issues and tests are recomputed and every output is rewritten immediately. Rejecting the
