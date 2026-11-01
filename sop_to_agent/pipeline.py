@@ -28,6 +28,30 @@ class CompileResult:
     stats: dict[str, Any] = field(default_factory=dict)
 
 
+LOWER = {">", ">="}
+UPPER = {"<", "<="}
+
+
+def repair(out: dict[str, Any]) -> tuple[dict[str, Any], list[str]]:
+    """Deterministic fixes for structural slips small models make. Each fix is recorded on the rule."""
+    notes = []
+    cond = out["condition"]
+    if out["priority"] == "default" and cond.comparisons:
+        out["priority"] = "normal"
+        notes.append("repaired: a default rule cannot have conditions; set to normal")
+    comps = cond.comparisons
+    if cond.combine == "any" and len(comps) == 2 and comps[0].field == comps[1].field:
+        lo = next((c for c in comps if c.op in LOWER), None)
+        hi = next((c for c in comps if c.op in UPPER), None)
+        try:
+            if lo and hi and float(lo.value) < float(hi.value):
+                out["condition"] = cond.model_copy(update={"combine": "all"})
+                notes.append("repaired: range written with OR changed to AND")
+        except (TypeError, ValueError):
+            pass
+    return out, notes
+
+
 def extract_rules(
     spec: Spec,
     documents: list[Document],
@@ -50,6 +74,7 @@ def extract_rules(
             continue
         ti, to = out.get("tokens", (0, 0))
         tok_in, tok_out = tok_in + ti, tok_out + to
+        out, repairs = repair(out)
         problems = validate_condition(out["condition"], spec)
         if out["outcome"] not in spec.outcomes:
             problems.append(f"unknown outcome '{out['outcome']}'")
@@ -65,6 +90,7 @@ def extract_rules(
             priority=out["priority"],
             source=extractor.name,
             citation=Citation(doc=s.doc, sentence_id=s.id, quote=s.text, section=s.section),
+            note="; ".join(repairs),
         ))
     stats = {"candidates": len(candidates), "rules": len(rules), "rejected": len(rejected),
              "seconds": round(time.perf_counter() - t0, 1), "input_tokens": tok_in, "output_tokens": tok_out}

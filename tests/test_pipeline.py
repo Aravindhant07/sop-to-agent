@@ -104,3 +104,17 @@ def test_review_ui_edit_recomputes(tmp_path):
     bad = c.post(f"/rules/{faq.id}", data={"status": "accepted", "outcome": "approve", "comparisons": "nope >= 1"}, follow_redirects=False)
     assert "error=" in bad.headers["location"]
     assert parse_comparisons("credit_score < 580\nhas_bankruptcy == true")[1].value is True
+
+
+def test_structural_repairs_are_applied_and_recorded():
+    from sop_to_agent.pipeline import repair
+    from sop_to_agent.bench.loan import C
+
+    out, notes = repair({"condition": C(("has_bankruptcy", "==", True)), "outcome": "decline", "priority": "default"})
+    assert out["priority"] == "normal" and notes
+    out, notes = repair({"condition": C(("credit_score", ">=", 580), ("credit_score", "<", 660), combine="any"),
+                         "outcome": "refer", "priority": "normal"})
+    assert out["condition"].combine == "all" and "range" in notes[0]
+    out, notes = repair({"condition": C(("credit_score", "<", 580), ("credit_score", ">", 800), combine="any"),
+                         "outcome": "refer", "priority": "normal"})
+    assert out["condition"].combine == "any" and not notes  # a genuine "outside the range" OR is left alone
