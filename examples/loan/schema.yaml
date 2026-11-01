@@ -1,0 +1,107 @@
+name: loan_approval
+decision: decision
+outcomes:
+- approve
+- decline
+- refer
+- request_documents
+inputs:
+- name: credit_score
+  type: integer
+  description: Applicant's credit (FICO) score
+  unit: ''
+  minimum: 300.0
+  maximum: 850.0
+  aliases:
+  - credit score
+  - fico
+  value_aliases: {}
+- name: dti_ratio
+  type: number
+  description: Debt-to-income ratio in percent
+  unit: '%'
+  minimum: 0.0
+  maximum: 100.0
+  aliases:
+  - debt-to-income
+  - dti
+  value_aliases: {}
+- name: loan_amount
+  type: number
+  description: Requested loan amount in USD
+  unit: USD
+  minimum: 1000.0
+  maximum: 1000000.0
+  aliases:
+  - loan amount
+  - loans
+  - loan
+  value_aliases: {}
+- name: employment_status
+  type: enum
+  description: Current employment status
+  values:
+  - employed
+  - self_employed
+  - unemployed
+  - retired
+  unit: ''
+  aliases:
+  - employment
+  value_aliases:
+    self_employed:
+    - self-employed
+    - self employed
+    unemployed:
+    - unemployed
+    retired:
+    - retired
+    employed:
+    - employed
+- name: years_employed
+  type: number
+  description: Years in current job or business
+  unit: ''
+  minimum: 0.0
+  maximum: 50.0
+  aliases:
+  - years
+  value_aliases: {}
+- name: has_bankruptcy
+  type: boolean
+  description: Any bankruptcy on record
+  unit: ''
+  aliases: []
+  value_aliases:
+    'true':
+    - bankruptcy
+- name: documents_complete
+  type: boolean
+  description: All required documents provided
+  unit: ''
+  aliases: []
+  value_aliases:
+    'false':
+    - missing
+    - incomplete
+rules: []
+documents: []
+outcome_aliases:
+  decline:
+  - cannot be approved
+  - not eligible
+  - ineligible
+  - declined
+  - decline
+  - rejected
+  - reject
+  request_documents:
+  - request documents
+  - request the documents
+  refer:
+  - referred
+  - refer
+  - manual review
+  approve:
+  - approved
+  - approve

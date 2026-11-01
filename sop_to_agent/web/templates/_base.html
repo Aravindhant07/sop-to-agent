@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% block title %}sop-to-agent{% endblock %}</title>
+<style>
+:root{--bg:#f7f7f5;--surface:#fff;--ink:#1c1d1f;--muted:#5e6168;--line:#e3e3df;--accent:#3b5bdb;--accent-ink:#fff;
+  --high:#b42318;--high-bg:#fde8e6;--med:#9a6200;--med-bg:#fbf0d9;--low:#5e6168;--low-bg:#eceeef;--ok:#1f7a4d;--ok-bg:#e5f4ec;--mark:#fff3bf}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#141517;--surface:#1d1f22;--ink:#ececec;--muted:#a3a7ae;--line:#2e3135;--accent:#8ea2ff;--accent-ink:#10131a;
+  --high:#f2786d;--high-bg:#3d1b18;--med:#e9b44c;--med-bg:#3a2d12;--low:#a3a7ae;--low-bg:#2a2d31;--ok:#5cc98f;--ok-bg:#173326;--mark:#4a3f12}}
+:root[data-theme="dark"]{--bg:#141517;--surface:#1d1f22;--ink:#ececec;--muted:#a3a7ae;--line:#2e3135;--accent:#8ea2ff;--accent-ink:#10131a;
+  --high:#f2786d;--high-bg:#3d1b18;--med:#e9b44c;--med-bg:#3a2d12;--low:#a3a7ae;--low-bg:#2a2d31;--ok:#5cc98f;--ok-bg:#173326;--mark:#4a3f12}
+*{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+a{color:var(--accent)}
+nav{background:var(--surface);border-bottom:1px solid var(--line)} nav .in{max-width:1100px;margin:0 auto;padding:10px 16px;display:flex;gap:18px;flex-wrap:wrap;align-items:center}
+nav .brand{font-weight:700;margin-right:auto;color:var(--ink);text-decoration:none} nav a.tab{text-decoration:none;color:var(--muted)}
+main{max-width:1100px;margin:0 auto;padding:24px 16px 64px} h1{font-size:22px;margin:0 0 4px} h2{font-size:17px;margin:28px 0 10px} h3{font-size:15px;margin:0 0 6px}
+.muted{color:var(--muted)} .small{font-size:13px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:12px}
+.two{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(320px,1fr))}
+.chip{display:inline-block;border-radius:999px;padding:2px 9px;font-weight:600;font-size:12px;white-space:nowrap}
+.high{background:var(--high-bg);color:var(--high)} .medium{background:var(--med-bg);color:var(--med)} .low,.pending{background:var(--low-bg);color:var(--low)}
+.accepted{background:var(--ok-bg);color:var(--ok)} .rejected{background:var(--high-bg);color:var(--high)}
+.table-wrap{overflow-x:auto} table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.04em}
+.mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px}
+mark{background:var(--mark);color:inherit;border-radius:3px;padding:0 2px}
+blockquote{margin:6px 0;padding:6px 12px;border-left:3px solid var(--line);background:var(--bg);border-radius:4px}
+input,select,textarea{width:100%;padding:8px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink);font:inherit}
+textarea{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px;min-height:90px}
+label{display:block;font-size:13px;color:var(--muted);margin-bottom:10px}
+.btn{display:inline-block;border:1px solid var(--accent);background:var(--accent);color:var(--accent-ink);border-radius:8px;padding:8px 14px;font:inherit;cursor:pointer}
+.err{background:var(--high-bg);color:var(--high);padding:8px 12px;border-radius:8px;margin-bottom:12px}
+</style>
+</head>
+<body>
+<nav><div class="in">
+  <a class="brand" href="/">sop-to-agent <span class="muted small">· {{ spec.name.replace('_',' ') }}</span></a>
+  <a class="tab" href="/">Rules &amp; issues</a>
+  {% for d in ws.documents %}<a class="tab" href="/documents/{{ d.name }}">{{ d.name }}</a>{% endfor %}
+  <a class="tab" href="/report" target="_blank" rel="noopener">Discovery report ↗</a>
+</div></nav>
+<main>{% block body %}{% endblock %}</main>
+</body></html>

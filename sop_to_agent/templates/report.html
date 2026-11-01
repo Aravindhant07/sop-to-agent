@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Discovery report · {{ spec.name }}</title>
+<style>
+:root{--bg:#f7f7f5;--surface:#fff;--ink:#1c1d1f;--muted:#5e6168;--line:#e3e3df;--accent:#3b5bdb;
+  --high:#b42318;--high-bg:#fde8e6;--med:#9a6200;--med-bg:#fbf0d9;--low:#5e6168;--low-bg:#eceeef;--mark:#fff3bf}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#141517;--surface:#1d1f22;--ink:#ececec;--muted:#a3a7ae;--line:#2e3135;--accent:#8ea2ff;
+  --high:#f2786d;--high-bg:#3d1b18;--med:#e9b44c;--med-bg:#3a2d12;--low:#a3a7ae;--low-bg:#2a2d31;--mark:#4a3f12}}
+:root[data-theme="dark"]{--bg:#141517;--surface:#1d1f22;--ink:#ececec;--muted:#a3a7ae;--line:#2e3135;--accent:#8ea2ff;
+  --high:#f2786d;--high-bg:#3d1b18;--med:#e9b44c;--med-bg:#3a2d12;--low:#a3a7ae;--low-bg:#2a2d31;--mark:#4a3f12}
+*{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:1000px;margin:0 auto;padding:32px 16px 64px} h1{font-size:26px;margin:0 0 4px} h2{font-size:18px;margin:36px 0 12px} h3{font-size:15px;margin:0 0 4px}
+.muted{color:var(--muted)} .small{font-size:13px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px;margin-bottom:12px}
+.kpis{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));margin-top:16px}
+.kpi .v{font-size:26px;font-weight:650} .kpi .l{color:var(--muted);font-size:13px}
+.chip{display:inline-block;border-radius:999px;padding:2px 9px;font-weight:600;font-size:12px}
+.high{background:var(--high-bg);color:var(--high)} .medium{background:var(--med-bg);color:var(--med)} .low{background:var(--low-bg);color:var(--low)}
+blockquote{margin:8px 0;padding:6px 12px;border-left:3px solid var(--line);background:var(--bg);border-radius:4px}
+blockquote mark{background:var(--mark);color:inherit}
+.q{font-weight:600;margin:6px 0}
+.table-wrap{overflow-x:auto} table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.04em}
+code,.mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px}
+</style>
+</head>
+<body><main>
+<div class="muted small">Discovery report · {{ generated }}</div>
+<h1>{{ spec.name.replace('_',' ') | title }}</h1>
+<div class="muted">From {{ spec.documents | join(', ') }}</div>
+<div class="kpis">
+  <div class="card kpi"><div class="v">{{ spec.rules | length }}</div><div class="l">Rules extracted, each linked to its source sentence</div></div>
+  <div class="card kpi"><div class="v">{{ counts.get('high', 0) }}</div><div class="l">High-severity issues to resolve before go-live</div></div>
+  <div class="card kpi"><div class="v">{{ issues | length }}</div><div class="l">Questions for the customer</div></div>
+  <div class="card kpi"><div class="v">{{ tests | length }}</div><div class="l">Tests generated ({{ open_tests }} depend on open issues)</div></div>
+</div>
+
+<h2>Questions for the customer</h2>
+{% for i in issues %}
+<div class="card">
+  <span class="chip {{ i.severity }}">{{ i.severity }}</span> <span class="muted small">{{ i.id }} · {{ i.kind.replace('_',' ') }}</span>
+  <h3 style="margin-top:6px">{{ i.title }}</h3>
+  <p class="q">{{ i.question }}</p>
+  {% for sid in i.sentence_ids %}{% if sid in sentences %}
+  <blockquote><mark>{{ sentences[sid].text }}</mark><br><span class="muted small">{{ sentences[sid].section or sentences[sid].doc }} · {{ sid }}</span></blockquote>
+  {% endif %}{% endfor %}
+  {% if i.examples %}<div class="small muted">Example input: <span class="mono">{{ i.examples[0] }}</span></div>{% endif %}
+  {% if i.detail %}<div class="small muted" style="margin-top:4px">{{ i.detail }}</div>{% endif %}
+</div>
+{% else %}
+<div class="card muted">No issues found.</div>
+{% endfor %}
+
+<h2>Extracted rules</h2>
+<p class="muted small">Applied in order: overrides, then normal rules in document order, then defaults. The first rule that matches decides.</p>
+<div class="card table-wrap"><table>
+  <thead><tr><th>#</th><th>Rule</th><th>Outcome</th><th>Source sentence</th></tr></thead>
+  <tbody>{% for r in spec.rules %}
+  <tr><td>{{ r.id }}</td><td class="mono">{{ r.condition | describe }}{% if r.priority != 'normal' %} <span class="chip low">{{ r.priority }}</span>{% endif %}</td>
+      <td><strong>{{ r.outcome }}</strong></td><td class="small">{{ r.citation.quote if r.citation else '' }}<br><span class="muted">{{ r.citation.sentence_id if r.citation else '' }} · {{ r.source }}</span></td></tr>
+  {% endfor %}</tbody>
+</table></div>
+
+{% if rejected %}
+<h2>Sentences that could not be turned into rules</h2>
+<div class="card table-wrap"><table><tbody>
+{% for x in rejected %}<tr><td class="small">{{ x.text }}</td><td class="small muted">{{ x.reason }}</td></tr>{% endfor %}
+</tbody></table></div>
+{% endif %}
+
+<h2>Tests</h2>
+<div class="card table-wrap"><table>
+  <thead><tr><th>Test</th><th>Inputs</th><th>Expected</th><th>Note</th></tr></thead>
+  <tbody>{% for t in tests[:40] %}
+  <tr><td>{{ t.id }}</td><td class="mono small">{{ t.inputs }}</td><td><strong>{{ t.expected or 'no rule' }}</strong></td>
+      <td class="small">{{ t.note }}{% if t.depends_on %} · <span class="chip medium">depends on {{ t.depends_on | join(', ') }}</span>{% endif %}</td></tr>
+  {% endfor %}</tbody>
+</table>{% if tests | length > 40 %}<p class="muted small">Showing 40 of {{ tests | length }}; all are in tests.jsonl.</p>{% endif %}</div>
+</main></body></html>

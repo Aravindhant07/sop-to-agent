@@ -1,0 +1,29 @@
+{% extends "_base.html" %}
+{% block body %}
+<h1>Review the extracted agent</h1>
+<p class="muted">{{ spec.rules | length }} rules from {{ spec.documents | join(', ') }} · {{ res.issues | length }} issues · {{ res.tests | length }} tests. Edits recompute issues and tests immediately.</p>
+
+<h2>Issues to raise with the customer</h2>
+{% for i in res.issues %}
+<div class="card">
+  <span class="chip {{ i.severity }}">{{ i.severity }}</span> <span class="muted small">{{ i.id }} · {{ i.kind.replace('_',' ') }}</span>
+  <h3 style="margin-top:6px">{{ i.title }}</h3>
+  <div class="small">{{ i.question }}</div>
+  {% for sid in i.sentence_ids[:3] %}{% if sid in sentences %}<blockquote class="small">{{ sentences[sid].text }} <span class="muted">· {{ sid }}</span></blockquote>{% endif %}{% endfor %}
+  {% if i.rule_ids %}<div class="small">Rules: {% for rid in i.rule_ids %}<a href="/rules/{{ rid }}">{{ rid }}</a>{% if not loop.last %}, {% endif %}{% endfor %}</div>{% endif %}
+</div>
+{% else %}<div class="card muted">No issues.</div>{% endfor %}
+
+<h2>Rules (in decision order)</h2>
+<div class="card table-wrap"><table>
+  <thead><tr><th>#</th><th>Rule</th><th>Outcome</th><th>Source sentence</th><th>Status</th></tr></thead>
+  <tbody>{% for r in spec.rules %}
+  <tr>
+    <td><a href="/rules/{{ r.id }}">{{ r.id }}</a></td>
+    <td class="mono">{{ r.condition | describe }}{% if r.priority != 'normal' %} <span class="chip low">{{ r.priority }}</span>{% endif %}</td>
+    <td><strong>{{ r.outcome }}</strong></td>
+    <td class="small">{{ r.citation.quote if r.citation else '' }}<div class="muted">{{ r.source }}</div></td>
+    <td><span class="chip {{ r.status }}">{{ r.status }}</span></td>
+  </tr>{% endfor %}</tbody>
+</table></div>
+{% endblock %}

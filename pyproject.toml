@@ -1,0 +1,38 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sop-to-agent"
+version = "0.1.0"
+description = "Turn process documents into a traceable agent spec, a discovery report of gaps and contradictions, and a test set."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+dependencies = [
+  "pydantic>=2.6",
+  "pyyaml>=6",
+  "jinja2>=3.1",
+  "typer>=0.12",
+  "fastapi>=0.110",
+  "uvicorn>=0.29",
+  "python-multipart>=0.0.9",
+  "pypdf>=4",
+]
+
+[project.optional-dependencies]
+local = ["torch>=2.2", "transformers>=4.45", "accelerate>=0.30"]
+claude = ["anthropic>=2.0"]
+dev = ["pytest>=8"]
+
+[project.scripts]
+sop2agent = "sop_to_agent.cli:app"
+
+[tool.setuptools.packages.find]
+include = ["sop_to_agent*"]
+
+[tool.setuptools.package-data]
+sop_to_agent = ["templates/*", "web/templates/*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

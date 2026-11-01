@@ -1,0 +1,15 @@
+{% extends "_base.html" %}
+{% block body %}
+<h1>{{ doc.name }}</h1>
+<p class="muted small">Highlighted: sentences turned into rules. Underlined in red: sentences involved in an issue.</p>
+<div class="card">
+{% set ns = namespace(section=None) %}
+{% for s in doc.sentences %}
+  {% if s.section != ns.section %}{% set ns.section = s.section %}<h3 style="margin-top:14px">{{ s.section }}</h3>{% endif %}
+  <p class="small" id="{{ s.id }}" style="margin:4px 0{% if s.id in issue_sids %};text-decoration:underline;text-decoration-color:var(--high);text-underline-offset:3px{% endif %}">
+    {% if s.id in rule_by_sid %}{% set r = rule_by_sid[s.id] %}<mark>{{ s.text }}</mark> <a class="mono" href="/rules/{{ r.id }}">{{ r.id }} → {{ r.outcome }}</a>
+    {% else %}<span class="muted">{{ s.text }}</span>{% endif %}
+  </p>
+{% endfor %}
+</div>
+{% endblock %}

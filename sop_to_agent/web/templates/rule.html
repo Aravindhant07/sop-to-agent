@@ -1,0 +1,32 @@
+{% extends "_base.html" %}
+{% block body %}
+<p class="small"><a href="/">← All rules</a></p>
+<h1>Rule {{ rule.id }} <span class="chip {{ rule.status }}">{{ rule.status }}</span></h1>
+<p class="mono">{{ rule.condition | describe }} → <strong>{{ rule.outcome }}</strong></p>
+{% if error %}<div class="err">{{ error }}</div>{% endif %}
+<div class="two">
+  <div class="card">
+    <h3>Source{% if rule.citation %} <span class="muted small">· {{ rule.citation.section }} · {{ rule.citation.sentence_id }}</span>{% endif %}</h3>
+    {% for s in context %}
+      <p class="small">{% if rule.citation and s.id == rule.citation.sentence_id %}<mark>{{ s.text }}</mark>{% else %}<span class="muted">{{ s.text }}</span>{% endif %}</p>
+    {% else %}
+      <p class="small">{{ rule.citation.quote if rule.citation else 'No citation' }}</p>
+    {% endfor %}
+    <p class="small muted">Extracted by {{ rule.source }}</p>
+    {% if issues %}<h3 style="margin-top:12px">Involved in</h3>
+      {% for i in issues %}<div class="small"><span class="chip {{ i.severity }}">{{ i.severity }}</span> {{ i.title }}</div>{% endfor %}{% endif %}
+  </div>
+  <form class="card" method="post" action="/rules/{{ rule.id }}">
+    <label>Status<select name="status">{% for s in ['accepted','pending','rejected'] %}<option {% if rule.status == s %}selected{% endif %}>{{ s }}</option>{% endfor %}</select></label>
+    <label>Outcome<select name="outcome">{% for o in spec.outcomes %}<option {% if rule.outcome == o %}selected{% endif %}>{{ o }}</option>{% endfor %}</select></label>
+    <label>Priority<select name="priority">{% for p in ['normal','override','default'] %}<option {% if rule.priority == p %}selected{% endif %}>{{ p }}</option>{% endfor %}</select></label>
+    <label>Combine<select name="combine"><option value="all" {% if rule.condition.combine == 'all' %}selected{% endif %}>all (AND)</option><option value="any" {% if rule.condition.combine == 'any' %}selected{% endif %}>any (OR)</option></select></label>
+    <label>Conditions, one per line: <span class="mono">field op value</span>
+      <textarea name="comparisons">{% for c in rule.condition.comparisons %}{{ c.field }} {{ c.op }} {{ c.value }}
+{% endfor %}</textarea></label>
+    <div class="small muted" style="margin:-4px 0 10px">Fields: {% for f in spec.inputs %}<span class="mono">{{ f.name }}</span>{% if f.values %} ({{ f.values | join('/') }}){% endif %}{% if not loop.last %}, {% endif %}{% endfor %}</div>
+    <label>Note<input name="note" value="{{ rule.note }}"></label>
+    <button class="btn" type="submit">Save and recompute</button>
+  </form>
+</div>
+{% endblock %}
