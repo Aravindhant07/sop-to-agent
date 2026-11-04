@@ -1,0 +1,801 @@
+{
+ "extractor": "llm:local:Qwen/Qwen2.5-1.5B-Instruct",
+ "decision_agreement": 0.499975,
+ "rule_recall": 0.767361111111111,
+ "issue_recall": 0.9166666666666666,
+ "issue_precision": 0.17105082417582418,
+ "false_rules": 10,
+ "seconds": 2474.3,
+ "variants": [
+  {
+   "variant": "loan_sop_a",
+   "decision_agreement": 0.5,
+   "rule_recall": 0.8888888888888888,
+   "rules": [
+    {
+     "rule": "T-docs",
+     "sentence": "If the application is missing required documents, request the documents from the applicant.",
+     "recovered": true,
+     "extracted": {
+      "outcome": "request_documents",
+      "condition": {
+       "combine": "any",
+       "comparisons": [
+        {
+         "field": "documents_complete",
+         "op": "!=",
+         "value": true
+        }
+       ]
+      }
+     }
+    },
+    {
+     "rule": "T-bankruptcy",
+     "sentence": "Applicants with a bankruptcy on record are declined.",
+     "recovered": true,
+     "extracted": {
+      "outcome": "decline",
+      "condition": {
+       "combine": "all",
+       "comparisons": [
+        {
+         "field": "has_bankruptcy",
+         "op": "==",
+         "value": true
+        }
+       ]
+      }
+     }
+    },
+    {
+     "rule": "T-score_low",
+     "sentence": "If the credit score is below 580, decline the application.",
+     "recovered": true,
+     "extracted": {
+      "outcome": "decline",
+      "condition": {
+       "combine": "all",
+       "comparisons": [
+        {
+         "field": "credit_score",
+         "op": "<",
+         "value": 580.0
+        }
+       ]
+      }
+     }
+    },
+    {
+     "rule": "T-dti",
+     "sentence": "If the debt-to-income ratio exceeds 45%, decline the application.",
+     "recovered": true,
+     "extracted": {
+      "outcome": "decline",
+      "condition": {
+       "combine": "all",
+       "comparisons": [
+        {
+         "field": "dti_ratio",
+         "op": ">",
+         "value": 45.0
+        }
+       ]
+      }
+     }
+    },
+    {
+     "rule": "T-unemployed",
+     "sentence": "Unemployed applicants are declined.",
+     "recovered": true,
+     "extracted": {
+      "outcome": "decline",
+      "condition": {
+       "combine": "all",
+       "comparisons": [
+        {
+         "field": "employment_status",
+         "op": "==",
+         "value": "unemployed"
+        }
+       ]
+      }
+     }
+    },
+    {
+     "rule": "T-amount",
+     "sentence": "Loans over $250,000 are referred to a senior underwriter.",
+     "recovered": true,
+     "extracted": {
+      "outcome": "refer",
+      "condition": {
+       "combine": "all",
+       "comparisons": [
+        {
+         "field": "loan_amount",
+         "op": ">",
+         "value": 250000.0
+        }
+       ]
+      }
+     }
+    },
+    {
+     "rule": "T-self_employed",
+     "sentence": "If the applicant is self-employed with less than 2 years in business, refer the application.",
+     "recovered": false,
+     "extracted": {
+      "outcome": "refer",
+      "condition": {
+       "combine": "any",
+       "comparisons": [
+        {
+         "field": "employment_status",
+         "op": "==",
+         "value": "self_employed"
+        },
+        {
+         "field": "years_employed",
+         "op": "<",
+         "value": 2.0
+        }
+       ]
+      }
+     }
+    },
+    {
+     "rule": "T-score_mid",
+     "sentence": "If the credit score is below 660, refer the application for manual review.",
+     "recovered": true,
+     "extracted": {
+      "outcome": "refer",
+      "condition": {
+       "combine": "any",
+       "comparisons": [
+        {
+         "field": "credit_score",
+         "op": "<",
+         "value": 660.0
+        }
+       ]
+      }
+     }
+    },
+    {
+     "rule": "T-default",
+     "sentence": "All other applications are approved.",
+     "recovered": true,
+     "extracted": {
+      "outcome": "approve",
+      "condition": {
+       "combine": "all",
+       "comparisons": []
+      }
+     }
+    }
+   ],
+   "false_rules": [
+    "This procedure applies to unsecured personal loans up to $1,000,000.",
+    "Required documents are listed in the application checklist."
+   ],
+   "issue_recall": 1.0,
+   "issue_precision": 0.15384615384615385,
+   "issues_found": [
+    {
+     "kind": "contradiction",
+     "text": "Applicants with a credit score of 700 or higher are approved.",
+     "detected": true
+    },
+    {
+     "kind": "vague_term",
+     "text": "Applicants with unstable income should be treated with caution.",
+     "detected": true
+    }
+   ],
+   "unparsed_flags": 2,
+   "stats": {
+    "candidates": 15,
+    "rules": 12,
+    "rejected": 3,
+    "seconds": 422.3,
+    "input_tokens": 9480,
+    "output_tokens": 757
+   }
+  },
+  {
+   "variant": "loan_sop_b",
+   "decision_agreement": 0.5,
+   "rule_recall": 0.625,
+   "rules": [
+    {
+     "rule": "T-docs",
+     "sentence": "Incomplete files must not be decided; ask the applicant for the outstanding paperwork first.",
+     "recovered": true,
+     "extracted": {
+      "outcome": "request_documents",
+      "condition": {
+       "combine": "any",
+       "comparisons": [
+        {
+         "field": "documents_complete",
+         "op": "!=",
+         "value": true
+        }
+       ]
+      }
+     }
+    },
+    {
+     "rule": "T-bankruptcy",
+     "sentence": "Any prior bankruptcy makes the applicant ineligible.",
+     "recovered": true,
+     "extracted": {
+      "outcome": "decline",
+      "condition": {
+       "combine": "all",
+       "comparisons": [
+        {
+         "field": "has_bankruptcy",
+         "op": "==",
+         "value": true
+        }
+       ]
+      }
+     }
+    },
+    {
+     "rule": "T-score_low",
+     "sentence": "Applicants whose FICO score falls short of 580 are not eligible.",
+     "recovered": true,
+     "extracted": {
+      "outcome": "decline",
+      "condition": {
+       "combine": "all",
+       "comparisons": [
+        {
+         "field": "credit_score",
+         "op": "<",
+         "value": 580.0
+        }
+       ]
+      }
+     }
+    },
+    {
+     "rule": "T-dti",
+     "sentence": "We do not lend when monthly debt payments take up more than 45% of income.",
+     "recovered": true,
+     "extracted": {
+      "outcome": "decline",
+      "condition": {
+       "combine": "all",
+       "comparisons": [
+        {
+         "field": "dti_ratio",
+         "op": ">",
+         "value": 45.0
+        }
+       ]
+      }
+     }
+    },
+    {
+     "rule": "T-unemployed",
+     "sentence": "Applicants without current employment cannot be approved.",
+     "recovered": true,
+     "extracted": {
+      "outcome": "decline",
+      "condition": {
+       "combine": "all",
+       "comparisons": [
+        {
+         "field": "employment_status",
+         "op": "==",
+         "value": "unemployed"
+        }
+       ]
+      }
+     }
+    },
+    {
+     "rule": "T-amount",
+     "sentence": "Any request above $250,000 needs sign-off from a senior underwriter.",
+     "recovered": false,
+     "extracted": {
+      "outcome": "request_documents",
+      "condition": {
+       "combine": "any",
+       "comparisons": [
+        {
+         "field": "loan_amount",
+         "op": ">",
+         "value": 250000.0
+        }
+       ]
+      }
+     }
+    },
+    {
+     "rule": "T-self_employed",
+     "sentence": "Self-employed applicants trading for under two years go to manual review.",
+     "recovered": false,
+     "extracted": {
+      "outcome": "request_documents",
+      "condition": {
+       "combine": "any",
+       "comparisons": [
+        {
+         "field": "years_employed",
+         "op": "<",
+         "value": 2.0
+        },
+        {
+         "field": "employment_status",
+         "op": "==",
+         "value": "self_employed"
+        }
+       ]
+      }
+     }
+    },
+    {
+     "rule": "T-score_mid",
+     "sentence": "Scores between 580 and 659 are handled by an underwriter rather than automatically.",
+     "recovered": false,
+     "extracted": {
+      "outcome": "request_documents",
+      "condition": {
+       "combine": "all",
+       "comparisons": [
+        {
+         "field": "credit_score",
+         "op": ">",
+         "value": 580.0
+        },
+        {
+         "field": "credit_score",
+         "op": "<",
+         "value": 660.0
+        }
+       ]
+      }
+     }
+    }
+   ],
+   "false_rules": [
+    "This procedure applies to unsecured personal loans up to $1,000,000.",
+    "Required documents are listed in the application checklist.",
+    "High-risk applicants must be referred."
+   ],
+   "issue_recall": 0.6666666666666666,
+   "issue_precision": 0.14285714285714285,
+   "issues_found": [
+    {
+     "kind": "boundary_mismatch",
+     "text": "Loans of $250,000 or more require senior underwriter review.",
+     "detected": true
+    },
+    {
+     "kind": "vague_term",
+     "text": "High-risk applicants must be referred.",
+     "detected": true
+    },
+    {
+     "kind": "gap",
+     "text": "No rule covers applicants who pass every check (default rule missing).",
+     "detected": false
+    }
+   ],
+   "unparsed_flags": 2,
+   "stats": {
+    "candidates": 14,
+    "rules": 12,
+    "rejected": 2,
+    "seconds": 1202.1,
+    "input_tokens": 8862,
+    "output_tokens": 774
+   }
+  },
+  {
+   "variant": "loan_sop_c",
+   "decision_agreement": 0.4998,
+   "rule_recall": 0.8888888888888888,
+   "rules": [
+    {
+     "rule": "T-docs",
+     "sentence": "When documentation is incomplete, request documents before any other review.",
+     "recovered": true,
+     "extracted": {
+      "outcome": "request_documents",
+      "condition": {
+       "combine": "any",
+       "comparisons": [
+        {
+         "field": "documents_complete",
+         "op": "!=",
+         "value": true
+        }
+       ]
+      }
+     }
+    },
+    {
+     "rule": "T-bankruptcy",
+     "sentence": "Decline the application if the applicant has ever filed for bankruptcy.",
+     "recovered": true,
+     "extracted": {
+      "outcome": "decline",
+      "condition": {
+       "combine": "all",
+       "comparisons": [
+        {
+         "field": "has_bankruptcy",
+         "op": "==",
+         "value": true
+        }
+       ]
+      }
+     }
+    },
+    {
+     "rule": "T-score_low",
+     "sentence": "A credit score under 580 results in a decline.",
+     "recovered": true,
+     "extracted": {
+      "outcome": "decline",
+      "condition": {
+       "combine": "all",
+       "comparisons": [
+        {
+         "field": "credit_score",
+         "op": "<",
+         "value": 580.0
+        }
+       ]
+      }
+     }
+    },
+    {
+     "rule": "T-dti",
+     "sentence": "A DTI above 45 percent is grounds for rejection.",
+     "recovered": true,
+     "extracted": {
+      "outcome": "decline",
+      "condition": {
+       "combine": "all",
+       "comparisons": [
+        {
+         "field": "dti_ratio",
+         "op": ">",
+         "value": 45.0
+        }
+       ]
+      }
+     }
+    },
+    {
+     "rule": "T-unemployed",
+     "sentence": "Decline applicants who are unemployed.",
+     "recovered": true,
+     "extracted": {
+      "outcome": "decline",
+      "condition": {
+       "combine": "all",
+       "comparisons": [
+        {
+         "field": "employment_status",
+         "op": "==",
+         "value": "unemployed"
+        }
+       ]
+      }
+     }
+    },
+    {
+     "rule": "T-amount",
+     "sentence": "Refer the application if the loan amount is more than $250,000.",
+     "recovered": true,
+     "extracted": {
+      "outcome": "refer",
+      "condition": {
+       "combine": "any",
+       "comparisons": [
+        {
+         "field": "loan_amount",
+         "op": ">",
+         "value": 250000.0
+        }
+       ]
+      }
+     }
+    },
+    {
+     "rule": "T-self_employed",
+     "sentence": "Refer self-employed applicants with fewer than 2 years of history.",
+     "recovered": false,
+     "extracted": {
+      "outcome": "refer",
+      "condition": {
+       "combine": "any",
+       "comparisons": [
+        {
+         "field": "employment_status",
+         "op": "==",
+         "value": "self_employed"
+        },
+        {
+         "field": "years_employed",
+         "op": "<",
+         "value": 2.0
+        }
+       ]
+      }
+     }
+    },
+    {
+     "rule": "T-score_mid",
+     "sentence": "Refer applicants with a credit score under 660.",
+     "recovered": true,
+     "extracted": {
+      "outcome": "refer",
+      "condition": {
+       "combine": "all",
+       "comparisons": [
+        {
+         "field": "credit_score",
+         "op": "<",
+         "value": 660.0
+        }
+       ]
+      }
+     }
+    },
+    {
+     "rule": "T-default",
+     "sentence": "Applications that pass every check above are approved.",
+     "recovered": true,
+     "extracted": {
+      "outcome": "approve",
+      "condition": {
+       "combine": "all",
+       "comparisons": []
+      }
+     }
+    }
+   ],
+   "false_rules": [
+    "This procedure applies to unsecured personal loans up to $1,000,000.",
+    "Required documents are listed in the application checklist."
+   ],
+   "issue_recall": 1.0,
+   "issue_precision": 0.2,
+   "issues_found": [
+    {
+     "kind": "unreachable_rule",
+     "text": "Applicants with a credit score below 500 are declined.",
+     "detected": true
+    },
+    {
+     "kind": "contradiction",
+     "text": "Applicants with a credit score of 700 or higher are approved.",
+     "detected": true
+    },
+    {
+     "kind": "boundary_mismatch",
+     "text": "Loans of $250,000 or more require senior underwriter review.",
+     "detected": true
+    }
+   ],
+   "unparsed_flags": 2,
+   "stats": {
+    "candidates": 16,
+    "rules": 14,
+    "rejected": 2,
+    "seconds": 415.1,
+    "input_tokens": 10110,
+    "output_tokens": 815
+   }
+  },
+  {
+   "variant": "loan_sop_d",
+   "decision_agreement": 0.5001,
+   "rule_recall": 0.6666666666666666,
+   "rules": [
+    {
+     "rule": "T-docs",
+     "sentence": "Do not make a decision on a file until every required document has been received; chase the applicant for anything outstanding.",
+     "recovered": true,
+     "extracted": {
+      "outcome": "request_documents",
+      "condition": {
+       "combine": "any",
+       "comparisons": [
+        {
+         "field": "documents_complete",
+         "op": "==",
+         "value": false
+        }
+       ]
+      }
+     }
+    },
+    {
+     "rule": "T-bankruptcy",
+     "sentence": "A history of bankruptcy rules the applicant out.",
+     "recovered": true,
+     "extracted": {
+      "outcome": "decline",
+      "condition": {
+       "combine": "any",
+       "comparisons": [
+        {
+         "field": "has_bankruptcy",
+         "op": "==",
+         "value": true
+        }
+       ]
+      }
+     }
+    },
+    {
+     "rule": "T-score_low",
+     "sentence": "We turn away anyone scoring lower than 580 with the credit bureau.",
+     "recovered": true,
+     "extracted": {
+      "outcome": "decline",
+      "condition": {
+       "combine": "all",
+       "comparisons": [
+        {
+         "field": "credit_score",
+         "op": "<",
+         "value": 580.0
+        }
+       ]
+      }
+     }
+    },
+    {
+     "rule": "T-dti",
+     "sentence": "Where debts eat up more than 45% of monthly income, the answer is no.",
+     "recovered": true,
+     "extracted": {
+      "outcome": "decline",
+      "condition": {
+       "combine": "all",
+       "comparisons": [
+        {
+         "field": "dti_ratio",
+         "op": ">",
+         "value": 45.0
+        }
+       ]
+      }
+     }
+    },
+    {
+     "rule": "T-unemployed",
+     "sentence": "People who are out of work are turned down.",
+     "recovered": true,
+     "extracted": {
+      "outcome": "decline",
+      "condition": {
+       "combine": "all",
+       "comparisons": [
+        {
+         "field": "employment_status",
+         "op": "==",
+         "value": "unemployed"
+        }
+       ]
+      }
+     }
+    },
+    {
+     "rule": "T-amount",
+     "sentence": "Requests north of $250,000 are escalated to a senior underwriter.",
+     "recovered": false,
+     "extracted": {
+      "outcome": "request_documents",
+      "condition": {
+       "combine": "any",
+       "comparisons": [
+        {
+         "field": "loan_amount",
+         "op": ">",
+         "value": 250000.0
+        }
+       ]
+      }
+     }
+    },
+    {
+     "rule": "T-self_employed",
+     "sentence": "Business owners with under 2 years of trading history go to an underwriter.",
+     "recovered": false,
+     "extracted": {
+      "outcome": "request_documents",
+      "condition": {
+       "combine": "any",
+       "comparisons": [
+        {
+         "field": "years_employed",
+         "op": "<",
+         "value": 2.0
+        }
+       ]
+      }
+     }
+    },
+    {
+     "rule": "T-score_mid",
+     "sentence": "Bureau scores from 580 up to 659 need an underwriter's sign-off.",
+     "recovered": false,
+     "extracted": {
+      "outcome": "request_documents",
+      "condition": {
+       "combine": "all",
+       "comparisons": [
+        {
+         "field": "credit_score",
+         "op": ">=",
+         "value": 580.0
+        },
+        {
+         "field": "credit_score",
+         "op": "<",
+         "value": 660.0
+        }
+       ]
+      }
+     }
+    },
+    {
+     "rule": "T-default",
+     "sentence": "Everyone else gets approved.",
+     "recovered": true,
+     "extracted": {
+      "outcome": "approve",
+      "condition": {
+       "combine": "all",
+       "comparisons": []
+      }
+     }
+    }
+   ],
+   "false_rules": [
+    "This procedure applies to unsecured personal loans up to $1,000,000.",
+    "Required documents are listed in the application checklist.",
+    "High-risk applicants must be referred."
+   ],
+   "issue_recall": 1.0,
+   "issue_precision": 0.1875,
+   "issues_found": [
+    {
+     "kind": "contradiction",
+     "text": "Applicants with a credit score of 700 or higher are approved.",
+     "detected": true
+    },
+    {
+     "kind": "boundary_mismatch",
+     "text": "Loans of $250,000 or more require senior underwriter review.",
+     "detected": true
+    },
+    {
+     "kind": "vague_term",
+     "text": "High-risk applicants must be referred.",
+     "detected": true
+    }
+   ],
+   "unparsed_flags": 2,
+   "stats": {
+    "candidates": 16,
+    "rules": 14,
+    "rejected": 2,
+    "seconds": 434.8,
+    "input_tokens": 10131,
+    "output_tokens": 847
+   }
+  }
+ ]
+}

@@ -85,13 +85,24 @@ of the patterns or prompt examples were written for.
 - **Rule recall:** % of true rules recovered *exactly* (right sentence, same outcome, same behaviour on every input).
 - **Issue recall / precision:** planted issues found / reported issues that are real.
 
-| Extractor | Decision agreement | Rule recall | Issue recall | Issue precision | False rules |
-|---|---|---|---|---|---|
-| `regex` (baseline, no model) | 57.7% | 47.9% | 66.7% | 87.5% | 0 |
+| Extractor | Decision agreement | Rule recall | Issue recall | Issue precision | False rules | Time (CPU) |
+|---|---|---|---|---|---|---|
+| `regex` (baseline, no model) | 57.7% | 47.9% | 66.7% | 87.5% | 0 | instant |
+| `local` Qwen2.5-1.5B-Instruct | 50.0% | **76.7%** | **91.7%** | 17.1% | 10 | 41 min |
 
-By SOP, the regex baseline recovers 89% of rules in plain wording (A), but **0% in the held-out
-conversational SOP (D)**. That gap is what the LLM extractor is for. Results for local open models
-(Qwen2.5 1.5B and 3B, run free on CPU) are being added.
+What the numbers say:
+
+- **The model reads paraphrase that patterns cannot.** On the held-out conversational SOP (D), rule recall
+  goes from 0% (regex) to 67%, and planted-issue recall goes from 1/3 to 3/3.
+- **One hallucinated rule can sink the whole agent.** The model also turned scope and filler sentences
+  into rules. "Required documents are listed in the application checklist" became "documents complete →
+  approve". Because it comes early in the document, that rule decides first for half of all inputs, so
+  decision agreement is exactly 50% even though 77% of the rules are right. The false rules also create
+  false contradiction alerts, hence the low issue precision.
+- **That is the design working as intended.** Every rule is shown next to the sentence it came from, so a
+  reviewer rejects "documents complete → approve" (cited from *"Required documents are listed in the
+  application checklist."*) in one click, and the engine and tests recompute. Small local models make
+  the review step essential, not optional.
 
 Per-variant details: [`docs/results/`](docs/results/).
 
